@@ -120,3 +120,86 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Add to your global CSS file */
+.fat-cursor {
+  caret-color: #fb923c;
+}
+
+.fat-cursor::after {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 1.2em;
+  background-color: #fb923c;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Markdown editor cursor alignment fixes */
+.markdown-editor {
+  line-height: 1.5 !important;
+}
+
+.markdown-editor * {
+  line-height: 1.5 !important;
+  vertical-align: baseline !important;
+  display: inline !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.markdown-editor span {
+  white-space: pre-wrap !important;
+}
+
+/* Make links clickable in the syntax highlight layer */
+.markdown-editor a {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  display: inline !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+.markdown-editor a:hover {
+  opacity: 0.8 !important;
+}
+
+/* Allow images to be displayed properly */
+.markdown-editor img {
+  pointer-events: auto !important;
+  display: block !important;
+  position: relative !important;
+  z-index: 5 !important;
+}
+
+/* Allow subtle text size variations for headers while maintaining alignment */
+.markdown-editor .text-lg {
+  font-size: 1.125rem !important;
+  line-height: 1.5 !important;
+}
+
+.markdown-editor .text-sm {
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+}
+
+/* Special handling for HR elements */
+.markdown-editor .block {
+  display: block !important;
+}
+
+.markdown-editor .relative {
+  position: relative !important;
+}

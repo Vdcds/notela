@@ -2,16 +2,15 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, PlusCircle, User, FileText, Archive } from "lucide-react";
+import { Home, PlusCircle, FileText, Archive } from "lucide-react";
 
 const Navbar = () => {
   const pathname = usePathname();
 
   const navItems = [
-    { id: "home", icon: Home, label: "Me", href: "/" },
+    { id: "home", icon: Home, label: "127.0.0.1", href: "/" },
     { id: "new", icon: PlusCircle, label: "New", href: "/newnote" },
-    { id: "about", icon: User, label: "Codes", href: "/codes" },
-    { id: "writings", icon: FileText, label: "Shits", href: "/writings" },
+    { id: "writings", icon: FileText, label: "ShitList", href: "/shitlist" },
     { id: "vault", icon: Archive, label: "Vault", href: "/vault" },
   ];
 
