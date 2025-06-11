@@ -1,0 +1,1 @@
+Hi I am vedant and this is my own solution for my own habbit of Jotting down shit that I want to but dont really because its soo cumbersome 

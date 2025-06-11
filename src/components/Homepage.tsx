@@ -19,7 +19,7 @@ const Homepage = () => {
   });
 
   const welcomeText =
-    "NOTELA v1.0.0 - The 'I Swear I'll Be Organized This Time' Terminal\n\n> Booting up your digital brain...\n> Loading coffee.exe... ☕\n> Initializing procrastination_blocker.dll... (failed)\n> Starting productivity_optimizer.exe... (also failed)\n> Falling back to basic note-taking... ✅\n\nSystem Status: Caffeinated and Ready!\n\nAvailable life choices:\n  [1] newnote  - Write stuff down (like a responsible human)\n  [2] shitlist - Manage your chaos professionally\n\nPress 1 or 2 to adult, ESC to give up and watch YouTube instead.";
+    "NOTELA v1.0.0 - The 'I Swear I'll Be Organized This Time' Terminal\n\n> Booting up your digital brain...\n> Loading coffee.exe... ☕\n> Initializing procrastination_blocker.dll... (failed)\n> Starting productivity_optimizer.exe... (also failed)\n> Falling back to basic note-taking... ✅\n\nSystem Status: Caffeinated and Ready!\n\nAvailable life choices:\n  [1] newnote  - Write stuff down (like a responsible human)\n  [2] shitlist - Manage your chaos professionally\n  [3] vault    - Browse your digital wisdom archive\n\nPress 1, 2, or 3 to adult, ESC to give up and watch YouTube instead.";
 
   // Initialize time on client side only
   useEffect(() => {
@@ -58,6 +58,8 @@ const Homepage = () => {
       navigateTo("/newnote");
     } else if (e.key === "2") {
       navigateTo("/shitlist");
+    } else if (e.key === "3") {
+      navigateTo("/vault");
     }
   };
 
@@ -158,6 +160,27 @@ const Homepage = () => {
                   {">"} ./shitlist --priority=panic
                 </button>
               </div>
+
+              <div className="bg-gray-800 p-6 rounded-lg border border-cyan-600/30 hover:border-cyan-400/50 transition-colors">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-cyan-400 text-xl font-bold">
+                    [3] VAULT 📚
+                  </span>
+                  <span className="text-gray-400 text-sm">
+                    digital archives
+                  </span>
+                </div>
+                <div className="text-sm text-gray-300 mb-4">
+                  Browse your collected digital wisdom (or random thoughts you
+                  forgot about)
+                </div>
+                <button
+                  onClick={() => navigateTo("/vault")}
+                  className="bg-cyan-600 text-white px-6 py-3 hover:bg-cyan-500 text-sm font-mono rounded shadow-lg hover:shadow-cyan-500/25"
+                >
+                  {">"} ./vault --explore
+                </button>
+              </div>
             </div>
 
             {/* Command Prompt */}
@@ -186,8 +209,8 @@ const Homepage = () => {
             NOTELA v1.0.0 - "Your Digital Brain (But Cooler)" 🧠
           </p>
           <p className="mt-1">
-            Press 1 for Digital Therapy | Press 2 for Organized Chaos | Ctrl+C
-            to Rage Quit
+            Press 1 for Digital Therapy | Press 2 for Organized Chaos | Press 3
+            for Memory Lane | Ctrl+C to Rage Quit
           </p>
         </div>
       </div>
