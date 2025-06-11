@@ -9,8 +9,14 @@ if (!fs.existsSync(VAULT_DIR)) {
   fs.mkdirSync(VAULT_DIR, { recursive: true });
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    // Check password in header
+    const password = request.headers.get("x-vault-password");
+    if (password !== "5204") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const files = fs
       .readdirSync(VAULT_DIR)
       .filter((file) => file.endsWith(".md"))
@@ -52,6 +58,12 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check password in header
+    const password = request.headers.get("x-vault-password");
+    if (password !== "5204") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { content, filename } = await request.json();
 
     if (!content || !filename) {

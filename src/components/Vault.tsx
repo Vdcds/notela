@@ -33,12 +33,18 @@ const Vault = () => {
   const [mode, setMode] = useState<"normal" | "search" | "command">("normal");
   const [command, setCommand] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const commandInputRef = useRef<HTMLInputElement>(null);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
 
   // Load files from vault
   const loadFiles = async () => {
+    if (!isAuthenticated) return;
+
     try {
       const response = await fetch("/api/vault");
       const data = await response.json();
@@ -225,7 +231,8 @@ const Vault = () => {
   };
 
   useEffect(() => {
-    loadFiles();
+    // Only set loading to false initially, don't load files
+    setLoading(false);
   }, []);
 
   // Update selected index when filtered files change
@@ -250,10 +257,86 @@ const Vault = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + sizes[i];
   };
 
+  // Password authentication
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password === "5204") {
+      setIsAuthenticated(true);
+      setPasswordError("");
+      loadFiles(); // Load files after successful authentication
+    } else {
+      setPasswordError("Invalid password. Access denied.");
+      setPassword("");
+      setTimeout(() => setPasswordError(""), 3000);
+    }
+  };
+
+  // Auto-focus password input on mount
+  useEffect(() => {
+    if (!isAuthenticated && passwordInputRef.current) {
+      passwordInputRef.current.focus();
+    }
+  }, [isAuthenticated]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#1e1e2e] text-[#cdd6f4] font-mono flex items-center justify-center">
         <div className="text-lg">loading vault...</div>
+      </div>
+    );
+  }
+
+  // Show password prompt if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#1e1e2e] text-[#cdd6f4] font-mono flex items-center justify-center">
+        <div className="bg-[#313244] p-8 rounded-lg border border-[#89b4fa] shadow-2xl max-w-md w-full mx-4">
+          <div className="text-center mb-6">
+            <div className="text-4xl mb-4">🔒</div>
+            <h2 className="text-2xl font-bold text-[#89b4fa] mb-2">
+              VAULT ACCESS
+            </h2>
+            <p className="text-[#6c7086] text-sm">
+              Enter password to access the vault
+            </p>
+          </div>
+
+          <form onSubmit={handlePasswordSubmit} className="space-y-4">
+            <div>
+              <input
+                ref={passwordInputRef}
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password..."
+                className="w-full bg-[#1e1e2e] text-[#cdd6f4] border border-[#6c7086] rounded-lg px-4 py-3 focus:outline-none focus:border-[#89b4fa] font-mono"
+                autoFocus
+              />
+            </div>
+
+            {passwordError && (
+              <div className="text-[#f38ba8] text-sm text-center bg-[#1e1e2e] p-3 rounded-lg border border-[#f38ba8]/30">
+                {passwordError}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="w-full bg-[#89b4fa] text-[#1e1e2e] py-3 rounded-lg font-bold hover:bg-[#74c7ec] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#89b4fa]/50"
+            >
+              UNLOCK VAULT
+            </button>
+          </form>
+
+          <div className="text-center mt-6 text-[#6c7086] text-xs">
+            <div className="flex items-center justify-center gap-2">
+              <kbd className="px-2 py-1 bg-[#1e1e2e] rounded text-xs">
+                Enter
+              </kbd>
+              <span>to submit</span>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -320,111 +403,153 @@ const Vault = () => {
         </div>
       )}
 
-      <div className="flex h-[calc(100vh-60px)]">
-        {/* File List */}
-        <div className="w-80 border-r border-[#313244] overflow-y-auto">
-          {filteredFiles.length === 0 ? (
-            <div className="p-4 text-center text-[#6c7086]">
-              <div className="text-4xl mb-2">∅</div>
-              <div className="text-sm">
-                {searchTerm ? "no matches" : "no files"}
-              </div>
+      {/* Password Prompt (when not authenticated) */}
+      {!isAuthenticated && (
+        <div className="flex items-center justify-center h-[calc(100vh-60px)]">
+          <form
+            onSubmit={handlePasswordSubmit}
+            className="bg-[#181825] p-6 rounded-md shadow-md w-80"
+          >
+            <div className="mb-4">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-[#cdd6f4] mb-1"
+              >
+                Password
+              </label>
+              <Input
+                ref={passwordInputRef}
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="bg-[#1e1e2e] text-[#cdd6f4] placeholder-[#6c7086] focus:ring-2 focus:ring-[#89b4fa] focus:outline-none"
+                placeholder="Enter your password"
+                autoFocus
+              />
+              {passwordError && (
+                <div className="text-red-500 text-xs mt-1">{passwordError}</div>
+              )}
             </div>
-          ) : (
-            <div>
-              {filteredFiles.map((file, index) => (
-                <div
-                  key={file.filename}
-                  className={`px-4 py-3 border-b border-[#313244] cursor-pointer transition-colors ${
-                    index === selectedIndex
-                      ? "bg-[#313244] border-l-2 border-l-[#89b4fa]"
-                      : "hover:bg-[#1e1e2e]"
-                  } ${
-                    selectedFile === file.filename
-                      ? "bg-[#313244] text-[#89b4fa]"
-                      : ""
-                  }`}
-                  onClick={() => {
-                    setSelectedIndex(index);
-                    loadFileContent(file.filename);
-                  }}
-                >
-                  <div className="flex items-start justify-between mb-1">
-                    <div className="font-medium text-sm truncate pr-2">
-                      {file.title}
-                    </div>
-                    <div className="text-xs text-[#6c7086] flex gap-2 shrink-0">
-                      <span>{formatFileSize(file.size)}</span>
-                      <span>{formatDate(file.lastModified)}</span>
-                    </div>
-                  </div>
-                  <div className="text-xs text-[#6c7086] line-clamp-2 leading-relaxed">
-                    {file.preview}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+            <Button
+              type="submit"
+              className="w-full bg-[#89b4fa] text-[#1e1e2e] hover:bg-[#6c83b2] transition-colors"
+            >
+              Unlock
+            </Button>
+          </form>
         </div>
+      )}
 
-        {/* File Content */}
-        <div className="flex-1 flex flex-col">
-          {selectedFile ? (
-            <>
-              {/* File Header */}
-              <div className="border-b border-[#313244] px-4 py-2 bg-[#181825]">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-[#a6e3a1]" />
-                    <span className="text-[#cdd6f4] font-medium">
-                      {selectedFile}
-                    </span>
-                  </div>
-                  <div className="text-xs text-[#6c7086]">
-                    e to edit in NewNote, q to quit
-                  </div>
+      {isAuthenticated && (
+        <div className="flex h-[calc(100vh-60px)]">
+          {/* File List */}
+          <div className="w-80 border-r border-[#313244] overflow-y-auto">
+            {filteredFiles.length === 0 ? (
+              <div className="p-4 text-center text-[#6c7086]">
+                <div className="text-4xl mb-2">∅</div>
+                <div className="text-sm">
+                  {searchTerm ? "no matches" : "no files"}
                 </div>
               </div>
-
-              {/* File Content */}
-              <div className="flex-1 overflow-hidden">
-                <div className="w-full h-full overflow-auto p-4">
-                  <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-[#cdd6f4]">
-                    {fileContent}
-                  </pre>
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="flex-1 flex items-center justify-center text-center text-[#6c7086]">
+            ) : (
               <div>
-                <div className="text-6xl mb-4">📂</div>
-                <div className="text-lg mb-2">select a file</div>
-                <div className="text-sm space-y-1">
-                  <div>
-                    <kbd className="px-1 text-xs bg-[#313244] rounded">j/k</kbd>{" "}
-                    navigate
+                {filteredFiles.map((file, index) => (
+                  <div
+                    key={file.filename}
+                    className={`px-4 py-3 border-b border-[#313244] cursor-pointer transition-colors ${
+                      index === selectedIndex
+                        ? "bg-[#313244] border-l-2 border-l-[#89b4fa]"
+                        : "hover:bg-[#1e1e2e]"
+                    } ${
+                      selectedFile === file.filename
+                        ? "bg-[#313244] text-[#89b4fa]"
+                        : ""
+                    }`}
+                    onClick={() => {
+                      setSelectedIndex(index);
+                      loadFileContent(file.filename);
+                    }}
+                  >
+                    <div className="flex items-start justify-between mb-1">
+                      <div className="font-medium text-sm truncate pr-2">
+                        {file.title}
+                      </div>
+                      <div className="text-xs text-[#6c7086] flex gap-2 shrink-0">
+                        <span>{formatFileSize(file.size)}</span>
+                        <span>{formatDate(file.lastModified)}</span>
+                      </div>
+                    </div>
+                    <div className="text-xs text-[#6c7086] line-clamp-2 leading-relaxed">
+                      {file.preview}
+                    </div>
                   </div>
-                  <div>
-                    <kbd className="px-1 text-xs bg-[#313244] rounded">
-                      enter
-                    </kbd>{" "}
-                    open file
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* File Content */}
+          <div className="flex-1 flex flex-col">
+            {selectedFile ? (
+              <>
+                {/* File Header */}
+                <div className="border-b border-[#313244] px-4 py-2 bg-[#181825]">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-[#a6e3a1]" />
+                      <span className="text-[#cdd6f4] font-medium">
+                        {selectedFile}
+                      </span>
+                    </div>
+                    <div className="text-xs text-[#6c7086]">
+                      e to edit in NewNote, q to quit
+                    </div>
                   </div>
-                  <div>
-                    <kbd className="px-1 text-xs bg-[#313244] rounded">/</kbd>{" "}
-                    search
+                </div>
+
+                {/* File Content */}
+                <div className="flex-1 overflow-hidden">
+                  <div className="w-full h-full overflow-auto p-4">
+                    <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-[#cdd6f4]">
+                      {fileContent}
+                    </pre>
                   </div>
-                  <div>
-                    <kbd className="px-1 text-xs bg-[#313244] rounded">:</kbd>{" "}
-                    command
+                </div>
+              </>
+            ) : (
+              <div className="flex-1 flex items-center justify-center text-center text-[#6c7086]">
+                <div>
+                  <div className="text-6xl mb-4">📂</div>
+                  <div className="text-lg mb-2">select a file</div>
+                  <div className="text-sm space-y-1">
+                    <div>
+                      <kbd className="px-1 text-xs bg-[#313244] rounded">
+                        j/k
+                      </kbd>{" "}
+                      navigate
+                    </div>
+                    <div>
+                      <kbd className="px-1 text-xs bg-[#313244] rounded">
+                        enter
+                      </kbd>{" "}
+                      open file
+                    </div>
+                    <div>
+                      <kbd className="px-1 text-xs bg-[#313244] rounded">/</kbd>{" "}
+                      search
+                    </div>
+                    <div>
+                      <kbd className="px-1 text-xs bg-[#313244] rounded">:</kbd>{" "}
+                      command
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Status Bar */}
       <div className="border-t border-[#313244] px-4 py-1 bg-[#181825] text-xs text-[#6c7086] flex justify-between">

@@ -10,15 +10,21 @@ const NewNote = () => {
   const [currentFilename, setCurrentFilename] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
-  const lineNumberRef = useRef<HTMLDivElement>(null);
-
-  // Load file content on mount if filename is provided via URL params
+  const lineNumberRef = useRef<HTMLDivElement>(null); // Load file content on mount if filename is provided via URL params
   useEffect(() => {
     const loadFromParams = async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const filename = urlParams.get("file");
 
       if (filename) {
+        // Check if trying to load from vault, require password
+        const password = prompt("Enter vault password:");
+        if (password !== "5204") {
+          alert("Invalid password. Access denied.");
+          window.location.href = "/";
+          return;
+        }
+
         try {
           const response = await fetch(`/api/vault/${filename}`);
           const data = await response.json();

@@ -9,6 +9,12 @@ export async function GET(
   { params }: { params: { filename: string } }
 ) {
   try {
+    // Check password in header
+    const password = request.headers.get("x-vault-password");
+    if (password !== "5204") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const filename = params.filename;
     const filePath = path.join(VAULT_DIR, filename);
 
@@ -29,6 +35,12 @@ export async function PUT(
   { params }: { params: { filename: string } }
 ) {
   try {
+    // Check password in header
+    const password = request.headers.get("x-vault-password");
+    if (password !== "5204") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const filename = params.filename;
     const { content } = await request.json();
 
