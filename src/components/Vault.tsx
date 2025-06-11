@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { FileText, Terminal } from "lucide-react";
@@ -29,7 +29,7 @@ const Vault = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const commandInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null); // Load files from vault
-  const loadFiles = async () => {
+  const loadFiles = useCallback(async () => {
     if (!isAuthenticated) return;
 
     setLoading(true);
@@ -58,7 +58,7 @@ const Vault = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [isAuthenticated]);
 
   // Load specific file content
   const loadFileContent = async (filename: string) => {
@@ -80,29 +80,32 @@ const Vault = () => {
   };
 
   // Delete file
-  const deleteFile = async (filename: string) => {
-    try {
-      const response = await fetch(`/api/vault/${filename}`, {
-        method: "DELETE",
-        headers: {
-          "x-vault-password": "5204",
-        },
-      });
+  const deleteFile = useCallback(
+    async (filename: string) => {
+      try {
+        const response = await fetch(`/api/vault/${filename}`, {
+          method: "DELETE",
+          headers: {
+            "x-vault-password": "5204",
+          },
+        });
 
-      if (response.ok) {
-        await loadFiles();
-        if (selectedFile === filename) {
-          setSelectedFile(null);
-          setFileContent("");
+        if (response.ok) {
+          await loadFiles();
+          if (selectedFile === filename) {
+            setSelectedFile(null);
+            setFileContent("");
+          }
+          setStatusMessage(`Deleted ${filename}`);
+          setTimeout(() => setStatusMessage(""), 3000);
         }
-        setStatusMessage(`Deleted ${filename}`);
-        setTimeout(() => setStatusMessage(""), 3000);
+      } catch (error) {
+        console.error("Error deleting file:", error);
+        setStatusMessage("Error deleting file");
       }
-    } catch (error) {
-      console.error("Error deleting file:", error);
-      setStatusMessage("Error deleting file");
-    }
-  };
+    },
+    [loadFiles, selectedFile]
+  );
 
   // Download file
   // Filter files based on search term
@@ -235,7 +238,7 @@ const Vault = () => {
   useEffect(() => {
     // Only set loading to false initially, don't load files
     setLoading(false);
-  }, [deleteFile, loadFiles]);
+  }, []);
 
   // Update selected index when filtered files change
   useEffect(() => {

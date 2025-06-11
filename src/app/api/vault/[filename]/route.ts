@@ -6,7 +6,7 @@ const VAULT_DIR = path.join(process.cwd(), "vault");
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { filename: string } }
+  { params }: { params: Promise<{ filename: string }> }
 ) {
   try {
     // Check password in header
@@ -15,7 +15,7 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const filename = params.filename;
+    const { filename } = await params;
     const filePath = path.join(VAULT_DIR, filename);
 
     if (!fs.existsSync(filePath)) {
@@ -32,7 +32,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { filename: string } }
+  { params }: { params: Promise<{ filename: string }> }
 ) {
   try {
     // Check password in header
@@ -41,7 +41,7 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const filename = await params.filename;
+    const { filename } = await params;
     const { content } = await request.json();
 
     if (!content) {
@@ -66,7 +66,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { filename: string } }
+  { params }: { params: Promise<{ filename: string }> }
 ) {
   try {
     // Check password in header
@@ -75,7 +75,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const filename = params.filename;
+    const { filename } = await params;
     const filePath = path.join(VAULT_DIR, filename);
 
     if (!fs.existsSync(filePath)) {

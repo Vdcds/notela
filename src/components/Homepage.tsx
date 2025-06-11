@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 const Homepage = () => {
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
@@ -53,7 +53,7 @@ const Homepage = () => {
     window.location.href = path;
   };
 
-  const handleKeyPress = (e: { key: string }) => {
+  const handleKeyPress = useCallback((e: { key: string }) => {
     if (e.key === "1") {
       navigateTo("/newnote");
     } else if (e.key === "2") {
@@ -61,7 +61,7 @@ const Homepage = () => {
     } else if (e.key === "3") {
       navigateTo("/vault");
     }
-  };
+  }, []);
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyPress);
