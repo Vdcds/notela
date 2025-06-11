@@ -19,7 +19,7 @@ const Homepage = () => {
   });
 
   const welcomeText =
-    "NOTELA v1.0.0 - The 'I Swear I'll Be Organized This Time' Terminal\n\n> Booting up your digital brain...\n> Loading coffee.exe... ☕\n> Initializing procrastination_blocker.dll... (failed)\n> Starting productivity_optimizer.exe... (also failed)\n> Falling back to basic note-taking... ✅\n\nSystem Status: Caffeinated and Ready!\n\nAvailable life choices:\n  [1] newnote  - Write stuff down (like a responsible human)\n  [2] shitlist - Manage your chaos professionally\n  [3] vault    - Browse your digital wisdom archive\n\nPress 1, 2, or 3 to adult, ESC to give up and watch YouTube instead.";
+    "╔═══════════════════════════════════════════════════════════════╗\n║                          NOTELA v1.0.0                        ║\n║         'I Swear I'll Be Organized This Time' Terminal        ║\n╚═══════════════════════════════════════════════════════════════╝\n\n> Initializing digital vault system...\n> Loading markdown parser... ✅\n> Starting vim-style navigation... ✅\n> Activating Catppuccin theme... ✅\n> Loading coffee.exe... ☕\n> Initializing procrastination_blocker.dll... (failed)\n> Starting productivity_optimizer.exe... (also failed)\n> Falling back to basic note-taking... ✅\n\n╭─ System Status ─╮\n│ Caffeinated ✓   │\n│ Terminal Ready  │\n│ Vault Secured   │\n╰─────────────────╯\n\nAvailable Operations:\n  [1] newnote  → Craft markdown masterpieces\n  [2] shitlist → Professional chaos management\n  [3] vault    → Browse your encrypted wisdom archive\n\nPress 1, 2, or 3 to begin your journey into organized productivity.\nPress ESC to surrender to the void of YouTube rabbit holes.";
 
   // Initialize time on client side only
   useEffect(() => {
