@@ -66,7 +66,7 @@ const Homepage = () => {
   useEffect(() => {
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, []);
+  }, [handleKeyPress]);
 
   return (
     <div
@@ -206,7 +206,7 @@ const Homepage = () => {
         {/* Footer */}
         <div className="p-4 text-center text-gray-500 text-sm bg-gray-900">
           <p className="text-purple-400">
-            NOTELA v1.0.0 - "Your Digital Brain (But Cooler)" 🧠
+            NOTELA v1.0.0 - &quot;Your Digital Brain (But Cooler)&quot; 🧠
           </p>
           <p className="mt-1">
             Press 1 for Digital Therapy | Press 2 for Organized Chaos | Press 3

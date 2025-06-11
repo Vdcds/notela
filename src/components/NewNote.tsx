@@ -220,7 +220,7 @@ const NewNote = () => {
       setSaveStatus("error");
       setTimeout(() => setSaveStatus("idle"), 3000);
     }
-  }, [content]);
+  }, [content, currentFilename]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -491,7 +491,7 @@ const NewNote = () => {
             </span>
           </div>
           <div className="text-subtext-400 text-base mt-2 font-medium">
-            ~ Just Because I won't pay for notion. ~
+            ~ Just Because I won&apos;t pay for notion. ~
           </div>
         </div>
 

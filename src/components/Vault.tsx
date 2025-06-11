@@ -1,19 +1,8 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { Card, CardHeader, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import {
-  FileText,
-  Plus,
-  Search,
-  Trash2,
-  Download,
-  Edit3,
-  Terminal,
-  ArrowUp,
-  ArrowDown,
-} from "lucide-react";
+import { FileText, Terminal } from "lucide-react";
 
 interface VaultFile {
   filename: string;
@@ -116,20 +105,6 @@ const Vault = () => {
   };
 
   // Download file
-  const downloadFile = (filename: string, content: string) => {
-    const blob = new Blob([content], { type: "text/markdown" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    setStatusMessage(`Downloaded ${filename}`);
-    setTimeout(() => setStatusMessage(""), 3000);
-  };
-
   // Filter files based on search term
   const filteredFiles = files.filter(
     (file) =>
@@ -260,7 +235,7 @@ const Vault = () => {
   useEffect(() => {
     // Only set loading to false initially, don't load files
     setLoading(false);
-  }, []);
+  }, [deleteFile, loadFiles]);
 
   // Update selected index when filtered files change
   useEffect(() => {
