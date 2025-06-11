@@ -39,18 +39,33 @@ const Vault = () => {
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const commandInputRef = useRef<HTMLInputElement>(null);
-  const passwordInputRef = useRef<HTMLInputElement>(null);
-
-  // Load files from vault
+  const passwordInputRef = useRef<HTMLInputElement>(null); // Load files from vault
   const loadFiles = async () => {
     if (!isAuthenticated) return;
 
+    setLoading(true);
     try {
-      const response = await fetch("/api/vault");
+      const response = await fetch("/api/vault", {
+        headers: {
+          "x-vault-password": "5204",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `API call failed: ${response.status} ${response.statusText}`
+        );
+      }
+
       const data = await response.json();
+      console.log("Loaded files:", data.files); // Debug log
       setFiles(data.files || []);
+      setStatusMessage(`Loaded ${data.files?.length || 0} files`);
+      setTimeout(() => setStatusMessage(""), 3000);
     } catch (error) {
       console.error("Error loading files:", error);
+      setStatusMessage("Error loading files");
+      setTimeout(() => setStatusMessage(""), 5000);
     } finally {
       setLoading(false);
     }
@@ -59,7 +74,11 @@ const Vault = () => {
   // Load specific file content
   const loadFileContent = async (filename: string) => {
     try {
-      const response = await fetch(`/api/vault/${filename}`);
+      const response = await fetch(`/api/vault/${filename}`, {
+        headers: {
+          "x-vault-password": "5204",
+        },
+      });
       const data = await response.json();
       setFileContent(data.content || "");
       setSelectedFile(filename);
@@ -76,6 +95,9 @@ const Vault = () => {
     try {
       const response = await fetch(`/api/vault/${filename}`, {
         method: "DELETE",
+        headers: {
+          "x-vault-password": "5204",
+        },
       });
 
       if (response.ok) {
@@ -176,6 +198,11 @@ const Vault = () => {
             e.preventDefault();
             window.location.href = "/newnote";
             break;
+          case "r":
+            e.preventDefault();
+            loadFiles();
+            setStatusMessage("Refreshing files...");
+            break;
           case "d":
             e.preventDefault();
             if (filteredFiles[selectedIndex]) {
@@ -218,7 +245,7 @@ const Vault = () => {
         break;
       case "help":
         setStatusMessage(
-          "Commands: q(uit), help | Keys: j/k(nav), /(search), :(cmd), e(dit in NewNote), n(ew), d(el)"
+          "Commands: q(uit), help | Keys: j/k(nav), /(search), :(cmd), e(dit in NewNote), n(ew), r(efresh), d(el)"
         );
         setTimeout(() => setStatusMessage(""), 5000);
         break;

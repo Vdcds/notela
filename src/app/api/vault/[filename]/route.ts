@@ -41,7 +41,7 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const filename = params.filename;
+    const filename = await params.filename;
     const { content } = await request.json();
 
     if (!content) {
@@ -69,6 +69,12 @@ export async function DELETE(
   { params }: { params: { filename: string } }
 ) {
   try {
+    // Check password in header
+    const password = request.headers.get("x-vault-password");
+    if (password !== "5204") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const filename = params.filename;
     const filePath = path.join(VAULT_DIR, filename);
 

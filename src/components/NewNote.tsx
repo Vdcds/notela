@@ -26,7 +26,11 @@ const NewNote = () => {
         }
 
         try {
-          const response = await fetch(`/api/vault/${filename}`);
+          const response = await fetch(`/api/vault/${filename}`, {
+            headers: {
+              "x-vault-password": "5204",
+            },
+          });
           const data = await response.json();
           setContent(data.content || "");
           setCurrentFilename(filename);
@@ -192,6 +196,7 @@ const NewNote = () => {
         method,
         headers: {
           "Content-Type": "application/json",
+          "x-vault-password": "5204",
         },
         body: JSON.stringify({
           content,
