@@ -3,12 +3,14 @@
 ## Option 1: Railway (Recommended for SQLite)
 
 ### Prerequisites
+
 - GitHub account
 - Git installed
 
 ### Steps:
 
 1. **Initialize Git Repository**
+
    ```bash
    git init
    git add .
@@ -16,8 +18,10 @@
    ```
 
 2. **Push to GitHub**
+
    - Create new repository on GitHub
    - Add remote and push:
+
    ```bash
    git remote add origin https://github.com/yourusername/notela.git
    git branch -M main
@@ -25,6 +29,7 @@
    ```
 
 3. **Deploy to Railway**
+
    - Go to [railway.app](https://railway.app)
    - Sign up with GitHub
    - Click "New Project" → "Deploy from GitHub repo"
@@ -44,6 +49,7 @@
 
 1. **Push to GitHub** (same as above)
 2. **Deploy to Render**
+
    - Go to [render.com](https://render.com)
    - Connect GitHub account
    - New → Web Service
@@ -53,6 +59,7 @@
    - Start Command: `pnpm start`
 
 3. **Add Environment Variables**
+
    - `DATABASE_URL=file:./production.db`
    - `NODE_ENV=production`
 
@@ -67,6 +74,7 @@
 
 1. **Push to GitHub** (same as above)
 2. **Deploy to DigitalOcean**
+
    - Go to [cloud.digitalocean.com](https://cloud.digitalocean.com)
    - Apps → Create App
    - Connect GitHub repository
@@ -85,34 +93,36 @@
 ### Providers: DigitalOcean Droplet, Linode, Vultr ($5/month)
 
 1. **Setup Server**
+
    ```bash
    # SSH into your server
    ssh root@your-server-ip
-   
+
    # Install Node.js
    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
    sudo apt-get install -y nodejs
-   
+
    # Install pnpm
    npm install -g pnpm
-   
+
    # Install PM2 for process management
    npm install -g pm2
    ```
 
 2. **Deploy App**
+
    ```bash
    # Clone repository
    git clone https://github.com/yourusername/notela.git
    cd notela
-   
+
    # Install dependencies
    pnpm install
-   
+
    # Set environment variables
    echo "DATABASE_URL=file:./production.db" > .env
    echo "NODE_ENV=production" >> .env
-   
+
    # Build and start
    pnpm build
    pm2 start "pnpm start" --name notela
@@ -137,6 +147,7 @@
 ## 🎯 Recommended: Start with Railway
 
 Railway is the easiest for SQLite apps:
+
 - Zero configuration
 - Automatic HTTPS
 - Built-in database persistence

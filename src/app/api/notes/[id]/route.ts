@@ -41,7 +41,8 @@ export async function PUT(
       tags?.map((tagName: string) => ({
         where: { name: tagName },
         create: { name: tagName },
-      })) || [];    const note = await prisma.note.update({
+      })) || [];
+    const note = await prisma.note.update({
       where: { id },
       data: {
         title,
