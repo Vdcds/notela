@@ -13,7 +13,8 @@ const NewNote = () => {
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.focus();
-    }  }, []);
+    }
+  }, []);
 
   // Sync scroll between all layers
   const handleScroll = () => {
@@ -183,7 +184,8 @@ const NewNote = () => {
       } else if (/^[\s]*\d+\.\s/.test(line)) {
         processedLine = `<span class="text-amber-300 font-medium">${processedLine}</span>`;
       } else if (/^[\s]*[-*+]\s\[[ x]\]\s/.test(line)) {
-        processedLine = `<span class="text-teal-300 font-medium">${processedLine}</span>`;      } else {
+        processedLine = `<span class="text-teal-300 font-medium">${processedLine}</span>`;
+      } else {
         processedLine = processedLine
           // Images with retro styling
           .replace(
@@ -473,7 +475,8 @@ const NewNote = () => {
                   }
                 }}
               />
-              {/* Invisible Textarea */}              <textarea
+              {/* Invisible Textarea */}{" "}
+              <textarea
                 ref={textareaRef}
                 placeholder="Start typing your markdown..."
                 value={content}
