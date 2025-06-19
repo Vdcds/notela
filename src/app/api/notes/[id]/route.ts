@@ -3,11 +3,12 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const note = await prisma.note.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         tags: true,
       },
@@ -29,9 +30,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { title, content, filename, tags } = await request.json();
 
     // Create or connect tags
@@ -39,10 +41,8 @@ export async function PUT(
       tags?.map((tagName: string) => ({
         where: { name: tagName },
         create: { name: tagName },
-      })) || [];
-
-    const note = await prisma.note.update({
-      where: { id: params.id },
+      })) || [];    const note = await prisma.note.update({
+      where: { id },
       data: {
         title,
         content,
@@ -69,11 +69,12 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     await prisma.note.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: "Note deleted successfully" });
