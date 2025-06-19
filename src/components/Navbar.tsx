@@ -15,35 +15,39 @@ const Navbar = () => {
 
   return (
     <>
+      {" "}
       {/* Top Brand Bar - Hidden on /newnote route */}
       {pathname !== "/newnote" && (
-        <div className="fixed top-0 left-0 right-0 bg-gradient-to-r from-[#1e1e2e] via-[#181825] to-[#1e1e2e] border-b border-[#313244] px-6 py-3 z-50 backdrop-blur-xl">
+        <div className="fixed top-0 left-0 right-0 bg-gradient-to-r from-[#1e1e2e] via-[#181825] to-[#1e1e2e] border-b border-[#313244] px-4 md:px-6 py-3 z-50 backdrop-blur-xl">
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="flex items-center gap-2">
-                <Terminal className="w-6 h-6 text-[#89b4fa] group-hover:text-[#74c7ec] transition-colors" />
+            <Link href="/" className="flex items-center gap-2 md:gap-3 group">
+              <div className="flex items-center gap-1 md:gap-2">
+                <Terminal className="w-5 h-5 md:w-6 md:h-6 text-[#89b4fa] group-hover:text-[#74c7ec] transition-colors" />
                 <div className="flex flex-col">
-                  <span className="text-[#cdd6f4] font-black text-xl tracking-wider">
+                  <span className="text-[#cdd6f4] font-black text-lg md:text-xl tracking-wider">
                     NOTELA
                   </span>
-                  <span className="text-[#6c7086] text-xs font-mono -mt-1">
+                  <span className="text-[#6c7086] text-xs font-mono -mt-1 hidden md:block">
                     digital.vault
                   </span>
                 </div>
               </div>
             </Link>
 
-            <div className="flex items-center gap-4">
-              <div className="text-[#6c7086] text-sm font-mono">v1.0.0</div>
-              <div className="text-[#89b4fa] text-sm font-mono">~/notela</div>
+            <div className="flex items-center gap-2 md:gap-4">
+              <div className="text-[#6c7086] text-xs md:text-sm font-mono hidden md:block">
+                v1.0.0
+              </div>
+              <div className="text-[#89b4fa] text-xs md:text-sm font-mono">
+                ~/notela
+              </div>
             </div>
           </div>
         </div>
       )}
-
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-[#1e1e2e]/90 backdrop-blur-lg border border-[#313244] rounded-2xl px-4 py-3 shadow-2xl z-50">
-        <div className="flex items-center space-x-1">
+      <nav className="fixed bottom-4 md:bottom-6 left-1/2 transform -translate-x-1/2 bg-[#1e1e2e]/90 backdrop-blur-lg border border-[#313244] rounded-xl md:rounded-2xl px-2 md:px-4 py-2 md:py-3 shadow-2xl z-50">
+        <div className="flex items-center space-x-0 md:space-x-1">
           {navItems.map((item) => {
             const IconComponent = item.icon;
             const isActive = pathname === item.href;
@@ -53,7 +57,7 @@ const Navbar = () => {
                 key={item.id}
                 href={item.href}
                 className={`
-            relative flex flex-col items-center justify-center px-4 py-2 rounded-xl transition-all duration-300 ease-out group
+            relative flex flex-col items-center justify-center px-3 md:px-4 py-2 rounded-lg md:rounded-xl transition-all duration-300 ease-out group
             ${
               isActive
                 ? "bg-[#89b4fa]/20 text-[#89b4fa] scale-105 border border-[#89b4fa]/30"
@@ -62,14 +66,20 @@ const Navbar = () => {
           `}
               >
                 <IconComponent
+                  size={18}
+                  className={`md:hidden transition-all duration-300 ${
+                    isActive ? "scale-110" : "group-hover:scale-105"
+                  }`}
+                />
+                <IconComponent
                   size={20}
-                  className={`transition-all duration-300 ${
+                  className={`hidden md:block transition-all duration-300 ${
                     isActive ? "scale-110" : "group-hover:scale-105"
                   }`}
                 />
                 <span
                   className={`
-            text-xs mt-1 font-medium transition-all duration-300 font-mono
+            text-xs mt-1 font-medium transition-all duration-300 font-mono hidden md:block
             ${isActive ? "opacity-100" : "opacity-70 group-hover:opacity-100"}
           `}
                 >

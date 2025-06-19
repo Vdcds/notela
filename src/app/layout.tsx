@@ -1,7 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import PWAInstallPrompt from "@/components/PWAInstallPrompt";
+import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,6 +14,14 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#22d3ee",
+};
 
 export const metadata: Metadata = {
   title: "Notela - Digital Markdown Vault",
@@ -31,8 +41,13 @@ export const metadata: Metadata = {
   applicationName: "Notela",
   generator: "Next.js",
   category: "productivity",
-  viewport: "width=device-width, initial-scale=1",
   robots: "index, follow",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Notela",
+  },
   openGraph: {
     title: "Notela - Digital Markdown Vault",
     description:
@@ -46,8 +61,17 @@ export const metadata: Metadata = {
     description: "Terminal-inspired markdown editor and secure vault",
   },
   icons: {
-    icon: "/icon.svg",
-    apple: "/icon.svg",
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    other: [
+      { rel: "apple-touch-icon-precomposed", url: "/apple-touch-icon.png" },
+    ],
   },
 };
 
@@ -61,8 +85,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <ServiceWorkerRegistration />
         <Navbar />
         <main className="pt-16">{children}</main>
+        <PWAInstallPrompt />
       </body>
     </html>
   );
