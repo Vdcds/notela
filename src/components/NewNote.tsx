@@ -5,8 +5,6 @@ const NewNote = () => {
   const [content, setContent] = useState("");
   const [isModified, setIsModified] = useState(false);
   const [saveStatus, setSaveStatus] = useState("idle");
-  const [currentFilename, setCurrentFilename] = useState(null);
-  const [cursorPosition, setCursorPosition] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
   const lineNumberRef = useRef<HTMLDivElement>(null);
@@ -15,15 +13,7 @@ const NewNote = () => {
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.focus();
-    }
-  }, []);
-
-  // Track cursor position
-  const handleSelectionChange = () => {
-    if (textareaRef.current) {
-      setCursorPosition(textareaRef.current.selectionStart);
-    }
-  };
+    }  }, []);
 
   // Sync scroll between all layers
   const handleScroll = () => {
@@ -45,16 +35,11 @@ const NewNote = () => {
     setIsModified(true);
     setSaveStatus("idle");
   };
-
   // Handle paste events to auto-convert image URLs
-  const handlePaste = (e: {
-    clipboardData: { getData: (arg0: string) => any };
-    preventDefault: () => void;
-  }) => {
+  const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
     const pastedText = e.clipboardData.getData("text");
     const imageUrlRegex =
       /^https?:\/\/.*\.(jpg|jpeg|png|gif|webp|svg|bmp|ico)(\?.*)?$/i;
-    const urlRegex = /^https?:\/\/[^\s]+$/i;
 
     if (imageUrlRegex.test(pastedText.trim())) {
       e.preventDefault();
@@ -142,15 +127,9 @@ const NewNote = () => {
       setTimeout(() => setSaveStatus("idle"), 3000);
     }
   }, [content]);
-
   // Keyboard shortcuts
   useEffect(() => {
-    const handleKeyDown = (e: {
-      ctrlKey: any;
-      shiftKey: any;
-      key: string;
-      preventDefault: () => void;
-    }) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key === "S") {
         e.preventDefault();
         saveAsMarkdownFile();
@@ -204,13 +183,12 @@ const NewNote = () => {
       } else if (/^[\s]*\d+\.\s/.test(line)) {
         processedLine = `<span class="text-amber-300 font-medium">${processedLine}</span>`;
       } else if (/^[\s]*[-*+]\s\[[ x]\]\s/.test(line)) {
-        processedLine = `<span class="text-teal-300 font-medium">${processedLine}</span>`;
-      } else {
+        processedLine = `<span class="text-teal-300 font-medium">${processedLine}</span>`;      } else {
         processedLine = processedLine
           // Images with retro styling
           .replace(
             /(!\[([^\]]*)\]\(([^)]+)\))/g,
-            (match: any, fullMatch: any, altText: any, imageUrl: any) => {
+            (match: string, altText: string, imageUrl: string) => {
               return `<div class="text-cyan-300 font-semibold bg-gray-900/50 p-4 rounded-lg border border-cyan-400/30 my-4 block backdrop-blur-sm">
                 <div class="text-cyan-200 text-sm mb-3 flex items-center gap-3">
                   <span class="text-xl">📸</span>
@@ -222,7 +200,7 @@ const NewNote = () => {
                 <img src="${imageUrl}" alt="${
                 altText || "Image"
               }" class="max-w-full h-auto rounded border border-cyan-400/30 mb-3 shadow-lg" style="max-height: 400px; display: block;" />
-                <div class="text-cyan-300/70 text-xs font-mono mt-3 bg-gray-800/50 p-2 rounded">${fullMatch}</div>
+                <div class="text-cyan-300/70 text-xs font-mono mt-3 bg-gray-800/50 p-2 rounded">${match}</div>
               </div>`;
             }
           )
@@ -495,17 +473,13 @@ const NewNote = () => {
                   }
                 }}
               />
-              {/* Invisible Textarea */}
-              <textarea
+              {/* Invisible Textarea */}              <textarea
                 ref={textareaRef}
                 placeholder="Start typing your markdown..."
                 value={content}
                 onChange={handleContentChange}
                 onScroll={handleScroll}
                 onPaste={handlePaste}
-                onSelect={handleSelectionChange}
-                onKeyUp={handleSelectionChange}
-                onClick={handleSelectionChange}
                 className="absolute inset-0 w-full h-full bg-transparent text-transparent border-none outline-none resize-none font-mono text-base leading-7 p-6 placeholder:text-gray-600"
                 spellCheck={false}
                 style={{
