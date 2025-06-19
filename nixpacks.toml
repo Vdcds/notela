@@ -1,0 +1,8 @@
+[providers.node]
+version = "18"
+
+[phases.build]
+cmd = "npm ci --prefer-offline --no-audit && npm run build:nolint"
+
+[phases.start]
+cmd = "npm start"

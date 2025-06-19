@@ -38,6 +38,9 @@ dev.db
 prisma/dev.db
 *.db-journal
 
+# Package managers
+package-lock.json
+
 # vercel
 .vercel
 
