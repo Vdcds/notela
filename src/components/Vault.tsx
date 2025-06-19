@@ -202,11 +202,9 @@ const Vault = () => {
             break;
         }
       }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
+    };    document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [mode, selectedIndex, filteredFiles, selectedFile]);
+  }, [mode, selectedIndex, filteredFiles, selectedFile, loadFiles, deleteFile]);
 
   // Handle command execution
   const executeCommand = (cmd: string) => {
