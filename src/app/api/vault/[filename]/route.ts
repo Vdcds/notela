@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-
-const VAULT_DIR = path.join(process.cwd(), "vault");
+import { prisma } from "@/lib/prisma";
 
 export async function GET(
   request: NextRequest,
@@ -16,14 +13,19 @@ export async function GET(
     }
 
     const { filename } = await params;
-    const filePath = path.join(VAULT_DIR, filename);
+    
+    // Find note by filename
+    const note = await prisma.note.findFirst({
+      where: {
+        filename: filename,
+      },
+    });
 
-    if (!fs.existsSync(filePath)) {
+    if (!note) {
       return NextResponse.json({ error: "File not found" }, { status: 404 });
     }
 
-    const content = fs.readFileSync(filePath, "utf-8");
-    return NextResponse.json({ content, filename });
+    return NextResponse.json({ content: note.content, filename });
   } catch (error) {
     console.error("Error reading file:", error);
     return NextResponse.json({ error: "Failed to read file" }, { status: 500 });
@@ -51,8 +53,32 @@ export async function PUT(
       );
     }
 
-    const filePath = path.join(VAULT_DIR, filename);
-    fs.writeFileSync(filePath, content, "utf-8");
+    // Find and update note by filename
+    const note = await prisma.note.findFirst({
+      where: {
+        filename: filename,
+      },
+    });
+
+    if (!note) {
+      return NextResponse.json({ error: "File not found" }, { status: 404 });
+    }
+
+    // Extract title from first line or use existing title
+    const firstLine = content.split("\n")[0];
+    const title = firstLine.startsWith("#")
+      ? firstLine.replace(/^#+\s*/, "").trim()
+      : note.title;
+
+    const updatedNote = await prisma.note.update({
+      where: {
+        id: note.id,
+      },
+      data: {
+        content: content,
+        title: title,
+      },
+    });
 
     return NextResponse.json({ success: true, filename });
   } catch (error) {
@@ -76,13 +102,24 @@ export async function DELETE(
     }
 
     const { filename } = await params;
-    const filePath = path.join(VAULT_DIR, filename);
 
-    if (!fs.existsSync(filePath)) {
+    // Find and delete note by filename
+    const note = await prisma.note.findFirst({
+      where: {
+        filename: filename,
+      },
+    });
+
+    if (!note) {
       return NextResponse.json({ error: "File not found" }, { status: 404 });
     }
 
-    fs.unlinkSync(filePath);
+    await prisma.note.delete({
+      where: {
+        id: note.id,
+      },
+    });
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting file:", error);

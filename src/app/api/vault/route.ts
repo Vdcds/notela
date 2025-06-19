@@ -1,13 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-
-const VAULT_DIR = path.join(process.cwd(), "vault");
-
-// Ensure vault directory exists
-if (!fs.existsSync(VAULT_DIR)) {
-  fs.mkdirSync(VAULT_DIR, { recursive: true });
-}
+import { prisma } from "@/lib/prisma";
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,34 +9,24 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const files = fs
-      .readdirSync(VAULT_DIR)
-      .filter((file) => file.endsWith(".md"))
-      .map((file) => {
-        const filePath = path.join(VAULT_DIR, file);
-        const stats = fs.statSync(filePath);
-        const content = fs.readFileSync(filePath, "utf-8");
+    // Get notes from database instead of file system
+    const notes = await prisma.note.findMany({
+      orderBy: {
+        updatedAt: "desc",
+      },
+      include: {
+        tags: true,
+      },
+    });
 
-        // Extract title from first line or filename
-        const firstLine = content.split("\n")[0];
-        const title = firstLine.startsWith("#")
-          ? firstLine.replace(/^#+\s*/, "").trim()
-          : file.replace(".md", "");
-
-        return {
-          filename: file,
-          title: title || file.replace(".md", ""),
-          lastModified: stats.mtime.toISOString(),
-          size: stats.size,
-          preview:
-            content.substring(0, 200) + (content.length > 200 ? "..." : ""),
-        };
-      })
-      .sort(
-        (a, b) =>
-          new Date(b.lastModified).getTime() -
-          new Date(a.lastModified).getTime()
-      );
+    // Transform database notes to match vault file interface
+    const files = notes.map((note) => ({
+      filename: note.filename || `${note.title.replace(/[^a-zA-Z0-9\s-]/g, "").replace(/\s+/g, "-").toLowerCase()}.md`,
+      title: note.title,
+      lastModified: note.updatedAt.toISOString(),
+      size: note.content.length,
+      preview: note.content.substring(0, 200) + (note.content.length > 200 ? "..." : ""),
+    }));
 
     return NextResponse.json({ files });
   } catch (error) {
@@ -73,10 +55,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const filePath = path.join(VAULT_DIR, filename);
-    fs.writeFileSync(filePath, content, "utf-8");
+    // Extract title from first line or use filename
+    const firstLine = content.split("\n")[0];
+    const title = firstLine.startsWith("#")
+      ? firstLine.replace(/^#+\s*/, "").trim()
+      : filename.replace(".md", "");    // Create or update note in database
+    // First try to find existing note by filename
+    const existingNote = await prisma.note.findFirst({
+      where: {
+        filename: filename,
+      },
+    });
 
-    return NextResponse.json({ success: true, filename });
+    let note;
+    if (existingNote) {
+      // Update existing note
+      note = await prisma.note.update({
+        where: {
+          id: existingNote.id,
+        },
+        data: {
+          content: content,
+          title: title,
+        },
+      });
+    } else {
+      // Create new note
+      note = await prisma.note.create({
+        data: {
+          title: title,
+          content: content,
+          filename: filename,
+        },
+      });
+    }
+
+    return NextResponse.json({ success: true, filename, id: note.id });
   } catch (error) {
     console.error("Error saving to vault:", error);
     return NextResponse.json(
