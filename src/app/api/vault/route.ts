@@ -21,11 +21,18 @@ export async function GET(request: NextRequest) {
 
     // Transform database notes to match vault file interface
     const files = notes.map((note) => ({
-      filename: note.filename || `${note.title.replace(/[^a-zA-Z0-9\s-]/g, "").replace(/\s+/g, "-").toLowerCase()}.md`,
+      filename:
+        note.filename ||
+        `${note.title
+          .replace(/[^a-zA-Z0-9\s-]/g, "")
+          .replace(/\s+/g, "-")
+          .toLowerCase()}.md`,
       title: note.title,
       lastModified: note.updatedAt.toISOString(),
       size: note.content.length,
-      preview: note.content.substring(0, 200) + (note.content.length > 200 ? "..." : ""),
+      preview:
+        note.content.substring(0, 200) +
+        (note.content.length > 200 ? "..." : ""),
     }));
 
     return NextResponse.json({ files });
@@ -59,7 +66,7 @@ export async function POST(request: NextRequest) {
     const firstLine = content.split("\n")[0];
     const title = firstLine.startsWith("#")
       ? firstLine.replace(/^#+\s*/, "").trim()
-      : filename.replace(".md", "");    // Create or update note in database
+      : filename.replace(".md", ""); // Create or update note in database
     // First try to find existing note by filename
     const existingNote = await prisma.note.findFirst({
       where: {

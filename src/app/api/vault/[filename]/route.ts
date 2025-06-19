@@ -13,7 +13,7 @@ export async function GET(
     }
 
     const { filename } = await params;
-    
+
     // Find note by filename
     const note = await prisma.note.findFirst({
       where: {

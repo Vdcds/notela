@@ -7,11 +7,9 @@ export async function GET() {
       include: {
         tags: true,
       },
-      orderBy: [
-        { completed: "asc" },
-        { priority: "desc" },
-        { createdAt: "desc" },
-      ],
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
     return NextResponse.json(tasks);
