@@ -11,7 +11,6 @@
 ### 2. Environment Setup
 
 - **Created .env file**: Added Neon PostgreSQL connection string
-- **Database URL**: `postgresql://neondb_owner:npg_4vJnZzBKQ2sk@ep-mute-forest-a8urbq5h-pooler.eastus2.azure.neon.tech/neondb?sslmode=require&channel_binding=require`
 
 ### 3. Migration Files
 
