@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Vault API</title>
+</head>
+<body>
+    <h1>Test Vault API</h1>
+    <button onclick="testVault()">Test Vault API</button>
+    <div id="result"></div>
+
+    <script>
+        async function testVault() {
+            try {
+                const response = await fetch('http://localhost:3000/api/vault', {
+                    headers: {
+                        'x-vault-password': '5204'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                console.log('Vault API result:', data);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

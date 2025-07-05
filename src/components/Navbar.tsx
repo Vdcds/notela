@@ -46,8 +46,8 @@ const Navbar = () => {
         </div>
       )}
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-4 md:bottom-6 left-1/2 transform -translate-x-1/2 bg-[#1e1e2e]/90 backdrop-blur-lg border border-[#313244] rounded-xl md:rounded-2xl px-2 md:px-4 py-2 md:py-3 shadow-2xl z-50">
-        <div className="flex items-center space-x-0 md:space-x-1">
+      <nav className="fixed right-4 md:right-6 top-1/2 transform -translate-y-1/2 bg-[#1e1e2e]/90 backdrop-blur-lg border border-[#313244] rounded-xl md:rounded-2xl px-2 md:px-4 py-2 md:py-3 shadow-2xl z-50 ">
+        <div className="flex flex-col items-center space-y-0 md:space-y-1">
           {navItems.map((item) => {
             const IconComponent = item.icon;
             const isActive = pathname === item.href;
@@ -57,12 +57,12 @@ const Navbar = () => {
                 key={item.id}
                 href={item.href}
                 className={`
-            relative flex flex-col items-center justify-center px-3 md:px-4 py-2 rounded-lg md:rounded-xl transition-all duration-300 ease-out group
-            ${
-              isActive
-                ? "bg-[#89b4fa]/20 text-[#89b4fa] scale-105 border border-[#89b4fa]/30"
-                : "text-[#6c7086] hover:text-[#cdd6f4] hover:bg-[#313244]/50"
-            }
+        relative flex flex-col items-center justify-center px-3 md:px-4 py-2 rounded-lg md:rounded-xl transition-all duration-300 ease-out group
+        ${
+          isActive
+            ? "bg-[#89b4fa]/20 text-[#89b4fa] scale-105 border border-[#89b4fa]/30"
+            : "text-[#6c7086] hover:text-[#cdd6f4] hover:bg-[#313244]/50"
+        }
           `}
               >
                 <IconComponent
@@ -79,14 +79,14 @@ const Navbar = () => {
                 />
                 <span
                   className={`
-            text-xs mt-1 font-medium transition-all duration-300 font-mono hidden md:block
-            ${isActive ? "opacity-100" : "opacity-70 group-hover:opacity-100"}
+        text-xs mt-1 font-medium transition-all duration-300 font-mono hidden md:block
+        ${isActive ? "opacity-100" : "opacity-70 group-hover:opacity-100"}
           `}
                 >
                   {item.label}
                 </span>
                 {isActive && (
-                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-[#89b4fa] rounded-full animate-pulse" />
+                  <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-[#89b4fa] rounded-full animate-pulse" />
                 )}
               </Link>
             );
